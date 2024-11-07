@@ -5,6 +5,6 @@ const usersSchema = new mongoose.Schema({
     email : {type : String},
     phoneNumber : {type : Number},
     password : {type : String},
-    confirmPassword : {type : String}
+    confirmPwd : {type : String}
 });
 export const User = new mongoose.model('Users',usersSchema);

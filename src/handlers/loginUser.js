@@ -21,7 +21,7 @@ export const loginUser = async (req, res) => {
         }
         const { TOKEN_SECRET, TOKEN_EXPIRES_IN } = process.env;
         console.log();
-        const token = jwt.sign({phoneNumber,ClientId: existingUser._id},TOKEN_SECRET,{expiresIn: TOKEN_EXPIRES_IN});
+        const token = jwt.sign({phoneNumber,clientId: existingUser._id},TOKEN_SECRET,{expiresIn: TOKEN_EXPIRES_IN});
         return res.status(200).json({
             message: "token crate sucessful",
             token: token

@@ -1,3 +1,5 @@
+import { EmployeeAttendance } from "../models/EmployeeAttendance.js";
+import { EmployeeId } from "../models/EmployeeId.js";
 import { Employees } from "../models/index.js";
 import mongoose from "mongoose";
 export const createEmployeeHandler = async (req, res) => {
@@ -22,6 +24,14 @@ export const createEmployeeHandler = async (req, res) => {
                 message: "this employee Aadhar Number already exist"
             })
         }
+        let fullEmployeeId = "";
+        const empIdExist = await EmployeeId.findOne();
+        console.log(empIdExist);
+        if(!empIdExist){
+            fullEmployeeId = 'EMP-1';
+        }else{
+            fullEmployeeId = empIdExist.employeeIdPrefix + (empIdExist.employeeIdNumber+1);
+        }
         const employee = await Employees.create({
             employeeName,
             employeePhoneNumber,
@@ -29,8 +39,19 @@ export const createEmployeeHandler = async (req, res) => {
             employeeLocation,
             employeeAadhar,
             employeeWagePerDay,
-            "clientId": clientId
+            "clientId": clientId,
+            "employeeId" : fullEmployeeId
         });
+        if(!empIdExist){
+            await EmployeeId.create({
+                employeeIdPrefix : "EMP",
+                employeeIdNumber : 1
+            });
+        }else{
+            await EmployeeId.findOneAndUpdate({
+                employeeIdNumber : empIdExist.employeeIdNumber+1
+            });
+        }
         return res.status(200).json({
             message: "Employee created sucessfully",
             data: employee
@@ -149,6 +170,7 @@ export const deleteEmployeeByIdHandler = async (req,res) => {
     try{
        const {id} = req.params;
        const {clientId} = req.locals;
+       
        if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
             message: "Invalid employee ID",
@@ -168,5 +190,91 @@ export const deleteEmployeeByIdHandler = async (req,res) => {
         return res.status(500).json({
             message: "Something went wrong, please try again"
         });
+    }
+}
+
+export const searchEmployeeHandler = async (req,res) => {
+    try{
+        const {searchText} = req.params;
+        if(!searchText){
+            return res.status(400).json({
+                message : "search Text required"
+            })
+        }
+        const getSearchDetails = await Employees.find({
+            $or: [
+                { "employeeName": { $regex: searchText, $options: "i" } },
+                { "employeeLocation": { $regex: searchText, $options: "i" } },
+                { 
+                    $expr: { 
+                        $regexMatch: { 
+                            input: { $toString: "$employeeWagePerDay" }, 
+                            regex: searchText, 
+                            options: "i" 
+                        } 
+                    } 
+                }
+            ]
+        });
+        // console.log(getSearchDetails);
+        return res.status(200).json({
+            message : "Search results get sucessfully",
+            data : getSearchDetails
+        })
+    }catch(error){
+        console.log("error",error);
+        return res.status(500).json({
+            message : "Something went wrong please try again later"
+        })
+    }
+
+}
+
+export const attendanceEmployeeHandler = async (req,res) => {
+    try{
+        const {attendanceData} = req.body;
+        console.log(attendanceData);
+        const updateData = attendanceData.map((o) => ({
+            updateOne: {
+                filter: {
+                    employeeId: o.employeeId, // Use `o.employeeId`
+                    attendanceDate: o.attendanceDate // Use `o.attendanceDate`
+                },
+                update: {
+                    $set: { ...o }
+                },
+                upsert: true
+            }
+        }));
+        await EmployeeAttendance.bulkWrite(updateData);
+        return res.status(200).json({
+            message : "employees attendance create sucess fully"
+        })
+    }catch(error){
+        console.log("error",error);
+        return res.status(500).json({
+            message : "something went wrong please try again"
+        })
+    }
+}
+
+export const attendanceGetByDateHandler = async (req,res) => {
+    try{
+        
+        // console.log("get datee",req.body);
+        const {date} = req.body;
+        console.log(date);
+        
+        const getDataByDate = await EmployeeAttendance.find({date});
+        console.log(getDataByDate)
+        return res.status(200).json({
+            message : "attendance Data get By date sucessfully",
+            data : getDataByDate
+        })
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({
+            message : "Something went wrong please try again"
+        })
     }
 }

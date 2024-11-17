@@ -7,6 +7,7 @@ const employeeSchema = new mongoose.Schema({
     employeeLocation : {type : String},
     employeeAadhar : {type : Number},
     employeeWagePerDay : {type : Number},
-    clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' } // reference to Client model
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' }, // reference to Client model
+    employeeId : {type : String}
 });
 export const Employees = new mongoose.model('Employees',employeeSchema);

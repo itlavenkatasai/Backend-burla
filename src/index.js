@@ -11,7 +11,10 @@ import {
     listEmployeesHandler,
     getEmployeeByIdHandler,
     updateEmployeeByIdHandler,
-    deleteEmployeeByIdHandler
+    deleteEmployeeByIdHandler,
+    searchEmployeeHandler,
+    attendanceEmployeeHandler,
+    attendanceGetByDateHandler
 } from './handlers/index.js';
 
 const app = express();
@@ -39,7 +42,9 @@ app.get('/employees', listEmployeesHandler);
 app.get('/employee/:id',getEmployeeByIdHandler);
 app.patch('/employee/:id',updateEmployeeByIdHandler);
 app.delete('/employee/:id',deleteEmployeeByIdHandler);
-
+app.get('/employee/search/:searchText',searchEmployeeHandler);
+app.post('/employees/attendance',attendanceEmployeeHandler);
+app.post('/employees/attendanceGetByDate',attendanceGetByDateHandler);
 
 
 app.listen(3000, () => {

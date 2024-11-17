@@ -1,5 +1,6 @@
-import { EmployeeAttendance } from "../models/EmployeeAttendance.js";
-import { EmployeeId } from "../models/EmployeeId.js";
+import { EmployeeAttendance } from "../models/index.js";
+import { EmployeeId } from "../models/index.js";
+import { Employees } from "../models/index.js";
 
 export const createEmployeeHandler = async (req, res) => {
     try {

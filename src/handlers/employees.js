@@ -2,6 +2,8 @@ import { EmployeeAttendance } from "../models/EmployeeAttendance.js";
 import { EmployeeId } from "../models/EmployeeId.js";
 import { Employees } from "../models/index.js";
 import mongoose from "mongoose";
+import { format, parseISO } from 'date-fns';
+import moment from "moment";
 export const createEmployeeHandler = async (req, res) => {
     try {
         const { clientId } = req.locals;
@@ -233,12 +235,11 @@ export const searchEmployeeHandler = async (req,res) => {
 export const attendanceEmployeeHandler = async (req,res) => {
     try{
         const {attendanceData} = req.body;
-        console.log(attendanceData);
         const updateData = attendanceData.map((o) => ({
             updateOne: {
                 filter: {
                     employeeId: o.employeeId, // Use `o.employeeId`
-                    attendanceDate: o.attendanceDate // Use `o.attendanceDate`
+                    attendanceDate: new Date(o.attendanceDate) // Use `o.attendanceDate` 
                 },
                 update: {
                     $set: { ...o }
@@ -260,18 +261,14 @@ export const attendanceEmployeeHandler = async (req,res) => {
 
 export const attendanceGetByDateHandler = async (req,res) => {
     try{
-        
-        // console.log("get datee",req.body);
         const {date} = req.body;
-        console.log(date);
-        
-        const getDataByDate = await EmployeeAttendance.find({date});
+        const getDataByDate = await EmployeeAttendance.find({attendanceDate: new Date(date) });
         console.log(getDataByDate)
         return res.status(200).json({
             message : "attendance Data get By date sucessfully",
             data : getDataByDate
         })
-    }catch(error){
+    } catch(error){
         console.log(error);
         return res.status(500).json({
             message : "Something went wrong please try again"

@@ -1,7 +1,6 @@
 import { EmployeeAttendance } from "../models/EmployeeAttendance.js";
 import { EmployeeId } from "../models/EmployeeId.js";
-import { Employees } from "../models/index.js";
-import mongoose from "mongoose";
+
 export const createEmployeeHandler = async (req, res) => {
     try {
         const { clientId } = req.locals;

@@ -1,6 +1,7 @@
 import { EmployeeAttendance } from "../models/index.js";
 import { EmployeeId } from "../models/index.js";
 import { Employees } from "../models/index.js";
+import mongoose from "mongoose";
 
 export const createEmployeeHandler = async (req, res) => {
     try {
@@ -233,6 +234,7 @@ export const searchEmployeeHandler = async (req,res) => {
 export const attendanceEmployeeHandler = async (req,res) => {
     try{
         const {attendanceData} = req.body;
+        console.log("attendance data ", attendanceData)
         const updateData = attendanceData.map((o) => ({
             updateOne: {
                 filter: {

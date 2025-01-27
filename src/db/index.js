@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 
 export const dbConnectedToMongoDB = async () => {
+    const {ATLAS_URL} = process.env;
     try{
-        await mongoose.connect("mongodb://localhost:27017/BurlaBuilders");
+        await mongoose.connect(ATLAS_URL);
         console.log("db is connected with node");
     }catch(error){
         console.log(error);
